@@ -65,13 +65,3 @@ func _ready() -> void:
 		)
 	
 	polygon.uv = localUV
-
-# draws a black outline around the puzzle piece
-func _draw():
-	# get_polygon returns a clone, we dont want to reaccess it every time we get a polygon
-	var poly = polygon.get_polygon()
-	
-	var color = Color(0,0,0)
-	for i in range(1 , poly.size()):
-		draw_line(poly[i-1], poly[i], color, 5)
-	draw_line(poly[poly.size() - 1], poly[0], color, 5)
