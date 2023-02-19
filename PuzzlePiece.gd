@@ -14,22 +14,12 @@ export (int) var col
 
 export (Texture) var texture
 
-export(Dictionary) var neighbors = {
-	left = null,
-	right = null,
-	top = null,
-	bottom = null
-}
-
-export(Dictionary) var hinge = {
-	left = HingeState.NONE,
-	right = HingeState.NONE,
-	top = HingeState.NONE,
-	bottom = HingeState.NONE
-}
+export(HingeState) var top_hinge = HingeState.NONE
+export(HingeState) var left_hinge = HingeState.NONE
+export(HingeState) var right_hinge = HingeState.NONE
+export(HingeState) var bottom_hinge = HingeState.NONE
 
 export var piece_scale: Vector2
-onready var hinge_scale = piece_scale / 2
 
 onready var polygon := $Polygon2D
 
@@ -39,21 +29,22 @@ func hinge(type: int, direction: Vector2) -> PoolVector2Array:
 	var angle := direction.angle()
 	if type == HingeState.NONE:
 		return PoolVector2Array([ piece_scale.rotated(angle) ])
-	# since our puzzle piece is around (0, 0), we can use hinge_scale / 2 to define the hinge boundaries
+	
+	# since our puzzle piece is around (0, 0), we can use piece_scale / 4 to define the hinge boundaries
 	return PoolVector2Array([
 		piece_scale.rotated(angle),
-		Vector2(piece_scale.x, hinge_scale.y/2).rotated(angle),
-		Vector2(piece_scale.x + hinge_scale.y * (1 if type == HingeState.EXTENDED else -1), hinge_scale.y/2).rotated(angle),
-		Vector2(piece_scale.x + hinge_scale.y * (1 if type == HingeState.EXTENDED else -1), -hinge_scale.y/2).rotated(angle),
-		Vector2(piece_scale.x, -hinge_scale.y/2).rotated(angle),
+		Vector2(piece_scale.x, piece_scale.y / 4).rotated(angle),
+		Vector2(piece_scale.x + piece_scale.y / 2 * (1 if type == HingeState.EXTENDED else -1), piece_scale.y / 4).rotated(angle),
+		Vector2(piece_scale.x + piece_scale.y / 2 * (1 if type == HingeState.EXTENDED else -1), -piece_scale.y / 4).rotated(angle),
+		Vector2(piece_scale.x, -piece_scale.y / 4).rotated(angle),
 	])
 
 func _ready() -> void:
 	polygon.polygon = (
-		hinge(hinge.right, Vector2.RIGHT)
-		+ hinge(hinge.top, Vector2.UP)
-		+ hinge(hinge.left, Vector2.LEFT)
-		+ hinge(hinge.bottom, Vector2.DOWN)
+		hinge(right_hinge, Vector2.RIGHT)
+		+ hinge(top_hinge, Vector2.UP)
+		+ hinge(left_hinge, Vector2.LEFT)
+		+ hinge(bottom_hinge, Vector2.DOWN)
 	)
 	
 	polygon.texture = texture
