@@ -5,7 +5,7 @@ export (Texture) var texture
 export (int) var rows = 0
 export (int) var cols = 0
 
-var puzzle_piece := preload("res://PuzzlePiece.tscn")
+var puzzle_piece := preload("res://puzzle/PuzzlePiece.tscn")
 
 func _reverse_hinge(hinge: int) -> int:
 	return 0 if hinge == 1 else 1
