@@ -59,8 +59,8 @@ func _ready() -> void:
 		local_uv.append(
 			normalized_vertex 
 			+ Vector2(
-				image_width / 2 + (image_width * col),
-				image_height / 2 + (image_height * row)
+				image_width / 2.0 + (image_width * col),
+				image_height / 2.0 + (image_height * row)
 			)
 		)
 	
