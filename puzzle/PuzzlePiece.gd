@@ -27,6 +27,8 @@ func hinge(type: int, direction: Vector2) -> PoolVector2Array:
 	# this is technically a "right hinge", so we can rotate it to be whatever hinge we want
 	
 	var angle := direction.angle()
+	
+	# because puzzle pieces can be oriented differently we need to swap width and height depending on the direction
 	var current_scale := piece_scale if direction.y == 0 else Vector2(piece_scale.y, piece_scale.x)
 	if type == HingeState.NONE:
 		return PoolVector2Array([ current_scale.rotated(angle) ])
@@ -50,6 +52,7 @@ func _ready() -> void:
 	
 	polygon.texture = texture
 	
+	# we keep track of our own UV array since we can't append to it directly (the getter returns a clone)
 	var localUV := []
 	
 	var IMAGE_WIDTH: int = texture.get_width() / cols
