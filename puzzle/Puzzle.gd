@@ -35,12 +35,13 @@ func _ready():
 		
 		piece.piece_scale = image_size / Vector2(cols, rows) * scale
 		
+		# we don't use a dictionary here since different values gives better editing in the editor UI
 		piece.top_hinge = 2 if neighbors.top == null else _reverse_hinge(neighbors.top.bottom_hinge)
 		piece.left_hinge = 2 if neighbors.left == null else _reverse_hinge(neighbors.left.right_hinge)
 		piece.right_hinge = 2 if piece.col == cols - 1 else randi() % 2
 		piece.bottom_hinge = 2 if piece.row == rows - 1 else randi() % 2
 		
-		piece.position = (piece.piece_scale * 2 * Vector2(piece.col, piece.row)) - image_size * scale
+		piece.position = (piece.piece_scale * 2 * Vector2(piece.col, piece.row)) - (image_size * scale)
 		
 		pieces.append(piece)
 	

@@ -27,16 +27,17 @@ func hinge(type: int, direction: Vector2) -> PoolVector2Array:
 	# this is technically a "right hinge", so we can rotate it to be whatever hinge we want
 	
 	var angle := direction.angle()
+	var current_scale := piece_scale if direction.y == 0 else Vector2(piece_scale.y, piece_scale.x)
 	if type == HingeState.NONE:
-		return PoolVector2Array([ piece_scale.rotated(angle) ])
+		return PoolVector2Array([ current_scale.rotated(angle) ])
 	
-	# since our puzzle piece is around (0, 0), we can use piece_scale / 4 to define the hinge boundaries
+	# since our puzzle piece is around (0, 0), we can use current_scale / 4 to define the hinge boundaries
 	return PoolVector2Array([
-		piece_scale.rotated(angle),
-		Vector2(piece_scale.x, piece_scale.y / 4).rotated(angle),
-		Vector2(piece_scale.x + piece_scale.y / 2 * (1 if type == HingeState.EXTENDED else -1), piece_scale.y / 4).rotated(angle),
-		Vector2(piece_scale.x + piece_scale.y / 2 * (1 if type == HingeState.EXTENDED else -1), -piece_scale.y / 4).rotated(angle),
-		Vector2(piece_scale.x, -piece_scale.y / 4).rotated(angle),
+		current_scale.rotated(angle),
+		Vector2(current_scale.x, current_scale.y / 4).rotated(angle),
+		Vector2(current_scale.x + current_scale.x / 2 * (1 if type == HingeState.EXTENDED else -1), current_scale.y / 4).rotated(angle),
+		Vector2(current_scale.x + current_scale.x / 2 * (1 if type == HingeState.EXTENDED else -1), -current_scale.y / 4).rotated(angle),
+		Vector2(current_scale.x, -current_scale.y / 4).rotated(angle),
 	])
 
 func _ready() -> void:
@@ -55,7 +56,7 @@ func _ready() -> void:
 	var IMAGE_HEIGHT: int = texture.get_height() / rows
 	
 	for vertex in polygon.polygon:
-		var normalized_vertex: Vector2 = (vertex / (piece_scale)) * (IMAGE_WIDTH / 2)
+		var normalized_vertex: Vector2 = (vertex / (piece_scale)) * (Vector2(IMAGE_WIDTH, IMAGE_HEIGHT) / 2)
 		localUV.append(
 			normalized_vertex 
 			+ Vector2(
@@ -65,3 +66,4 @@ func _ready() -> void:
 		)
 	
 	polygon.uv = localUV
+
