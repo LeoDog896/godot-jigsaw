@@ -1,4 +1,4 @@
-extends Node2D
+extends Polygon2D
 
 enum HingeState {
 	EXTENDED = 0,
@@ -12,16 +12,12 @@ export (int) var cols
 export (int) var row
 export (int) var col
 
-export (Texture) var texture
-
 export(HingeState) var top_hinge = HingeState.NONE
 export(HingeState) var left_hinge = HingeState.NONE
 export(HingeState) var right_hinge = HingeState.NONE
 export(HingeState) var bottom_hinge = HingeState.NONE
 
 export var piece_scale: Vector2
-
-onready var polygon := $Polygon2D
 
 func hinge(type: int, direction: Vector2) -> PoolVector2Array:
 	# this is technically a "right hinge", so we can rotate it to be whatever hinge we want
@@ -43,14 +39,12 @@ func hinge(type: int, direction: Vector2) -> PoolVector2Array:
 	])
 
 func _ready() -> void:
-	polygon.polygon = (
+	polygon = (
 		hinge(right_hinge, Vector2.RIGHT)
 		+ hinge(top_hinge, Vector2.UP)
 		+ hinge(left_hinge, Vector2.LEFT)
 		+ hinge(bottom_hinge, Vector2.DOWN)
 	)
-	
-	polygon.texture = texture
 	
 	# we keep track of our own UV array since we can't append to it directly (the getter returns a clone)
 	var localUV := []
@@ -58,7 +52,7 @@ func _ready() -> void:
 	var IMAGE_WIDTH: int = texture.get_width() / cols
 	var IMAGE_HEIGHT: int = texture.get_height() / rows
 	
-	for vertex in polygon.polygon:
+	for vertex in polygon:
 		var normalized_vertex: Vector2 = (vertex / (piece_scale)) * (Vector2(IMAGE_WIDTH, IMAGE_HEIGHT) / 2)
 		localUV.append(
 			normalized_vertex 
@@ -68,4 +62,4 @@ func _ready() -> void:
 			)
 		)
 	
-	polygon.uv = localUV
+	uv = localUV
