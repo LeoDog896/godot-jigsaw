@@ -21,7 +21,7 @@ func _ready():
 		piece.rows = rows
 		piece.cols = cols
 		
-		piece.row = n / rows
+		piece.row = n / cols
 		piece.col = n % cols
 		
 		piece.texture = texture

@@ -66,4 +66,3 @@ func _ready() -> void:
 		)
 	
 	polygon.uv = localUV
-
