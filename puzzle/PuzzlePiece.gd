@@ -23,20 +23,22 @@ func hinge(type: int, direction: Vector2) -> PoolVector2Array:
 	# this is technically a "right hinge", so we can rotate it to be whatever hinge we want
 	
 	var angle := direction.angle()
+	var pool = PoolVector2Array()
 	
 	# because puzzle pieces can be oriented differently we need to swap width and height depending on the direction
 	var current_scale := piece_scale if direction.y == 0 else Vector2(piece_scale.y, piece_scale.x)
-	if type == HingeState.NONE:
-		return PoolVector2Array([ current_scale.rotated(angle) ])
+	pool.append(current_scale.rotated(angle))
 	
 	# since our puzzle piece is around (0, 0), we can use current_scale / 4 to define the hinge boundaries
-	return PoolVector2Array([
-		current_scale.rotated(angle),
-		Vector2(current_scale.x, current_scale.y / 4).rotated(angle),
-		Vector2(current_scale.x + current_scale.x / 2 * (1 if type == HingeState.EXTENDED else -1), current_scale.y / 4).rotated(angle),
-		Vector2(current_scale.x + current_scale.x / 2 * (1 if type == HingeState.EXTENDED else -1), -current_scale.y / 4).rotated(angle),
-		Vector2(current_scale.x, -current_scale.y / 4).rotated(angle),
-	])
+	if type != HingeState.NONE:
+		pool.append_array([
+			Vector2(current_scale.x, current_scale.y / 4).rotated(angle),
+			Vector2(current_scale.x + current_scale.x / 2 * sign(type - 0.5), current_scale.y / 4).rotated(angle),
+			Vector2(current_scale.x + current_scale.x / 2 * sign(type - 0.5), -current_scale.y / 4).rotated(angle),
+			Vector2(current_scale.x, -current_scale.y / 4).rotated(angle),
+		])
+	
+	return pool
 
 func _ready() -> void:
 	polygon = (
@@ -47,19 +49,19 @@ func _ready() -> void:
 	)
 	
 	# we keep track of our own UV array since we can't append to it directly (the getter returns a clone)
-	var localUV := []
+	var local_uv := []
 	
-	var IMAGE_WIDTH: int = texture.get_width() / cols
-	var IMAGE_HEIGHT: int = texture.get_height() / rows
+	var image_width: int = texture.get_width() / cols
+	var image_height: int = texture.get_height() / rows
 	
 	for vertex in polygon:
-		var normalized_vertex: Vector2 = (vertex / (piece_scale)) * (Vector2(IMAGE_WIDTH, IMAGE_HEIGHT) / 2)
-		localUV.append(
+		var normalized_vertex: Vector2 = (vertex / (piece_scale)) * (Vector2(image_width, image_height) / 2)
+		local_uv.append(
 			normalized_vertex 
 			+ Vector2(
-				IMAGE_WIDTH / 2 + (IMAGE_WIDTH * col),
-				IMAGE_HEIGHT / 2 + (IMAGE_HEIGHT * row)
+				image_width / 2 + (image_width * col),
+				image_height / 2 + (image_height * row)
 			)
 		)
 	
-	uv = localUV
+	uv = local_uv

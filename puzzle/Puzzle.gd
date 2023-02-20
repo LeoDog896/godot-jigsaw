@@ -1,5 +1,11 @@
 extends Node2D
 
+enum HingeState {
+	EXTENDED = 0,
+	CONTRACTED = 1,
+	NONE = 2
+}
+
 export (Texture) var texture
 
 export (int) var rows = 0
@@ -8,7 +14,7 @@ export (int) var cols = 0
 var puzzle_piece := preload("res://puzzle/PuzzlePiece.tscn")
 
 func _reverse_hinge(hinge: int) -> int:
-	return 0 if hinge == 1 else 1
+	return HingeState.EXTENDED if hinge == HingeState.CONTRACTED else HingeState.CONTRACTED
 
 func _ready():
 	var pieces: Array = []
@@ -36,10 +42,10 @@ func _ready():
 		piece.piece_scale = image_size / Vector2(cols, rows) * scale
 		
 		# we don't use a dictionary here since different values gives better editing in the editor UI
-		piece.top_hinge = 2 if neighbors.top == null else _reverse_hinge(neighbors.top.bottom_hinge)
-		piece.left_hinge = 2 if neighbors.left == null else _reverse_hinge(neighbors.left.right_hinge)
-		piece.right_hinge = 2 if piece.col == cols - 1 else randi() % 2
-		piece.bottom_hinge = 2 if piece.row == rows - 1 else randi() % 2
+		piece.top_hinge    = HingeState.NONE if neighbors.top == null else _reverse_hinge(neighbors.top.bottom_hinge)
+		piece.left_hinge   = HingeState.NONE if neighbors.left == null else _reverse_hinge(neighbors.left.right_hinge)
+		piece.right_hinge  = HingeState.NONE if piece.col == cols - 1 else randi() % 2
+		piece.bottom_hinge = HingeState.NONE if piece.row == rows - 1 else randi() % 2
 		
 		piece.position = (piece.piece_scale * 2 * Vector2(piece.col, piece.row)) - (image_size * scale)
 		
